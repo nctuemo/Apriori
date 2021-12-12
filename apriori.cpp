@@ -6,6 +6,7 @@
 #include <fstream>
 #include <cmath>
 #include <iomanip>
+#include <algorithm>
 using namespace std;
 
 long double round(long double value, int pos){

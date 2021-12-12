@@ -1,6 +1,10 @@
-apriori.exe : apriori.o
-	g++ -std=c++11 -o apriori.exe apriori.o
+all: apriori apriori_mpi
 
-apriori.o : apriori.cpp
-	g++ -std=c++11 -c -o apriori.o apriori.cpp
+apriori : apriori.cpp
+	g++ -std=c++11 -o apriori apriori.cpp
 
+apriori_mpi : apriori.cpp
+	g++ -std=c++11 -o apriori_mpi apriori_mpi.cpp
+
+clean: 
+	rm apriori apriori_mpi

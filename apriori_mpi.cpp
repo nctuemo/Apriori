@@ -6,6 +6,7 @@
 #include <fstream>
 #include <cmath>
 #include <iomanip>
+#include <algorithm>
 #include <mpi.h>
 using namespace std;
 
