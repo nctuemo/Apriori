@@ -7,6 +7,7 @@
 #include <cmath>
 #include <iomanip>
 #include <algorithm>
+#include <chrono>
 #include <mpi.h>
 using namespace std;
 
@@ -312,7 +313,13 @@ int main (int argc, char ** argv) {
     InputReader inputReader(inputFileName);
     vector<vector<int> > transactions = inputReader.getTransactions();
     Apriori apriori(transactions, stold(minSupport));
+
+    chrono::steady_clock::time_point begin = chrono::steady_clock::now();
     apriori.process();
+    chrono::steady_clock::time_point end = chrono::steady_clock::now();
+
+    cout << chrono::duration_cast<chrono::microseconds>(end - begin).count() << endl;
+    
     OutputPrinter outputPrinter(outputFileName, apriori.getAssociationRules());
     
     /*
