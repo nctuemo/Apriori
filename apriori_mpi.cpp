@@ -100,7 +100,7 @@ public:
     vector<vector<int> > generateNextC() {
         if(nowStep==0) {
             vector<vector<int> > ret;
-
+            
             if(world_rank == 0){  //root get elements of transactions 
                 vector<int> element = getElement(transactions);
                 for(auto&i:element) {
@@ -108,22 +108,20 @@ public:
                 }
                 if(world_size>1){  //send elements to workers
                     int send_size = ret.size();
+                    
                     for (int i=1; i<world_size; i++){
                         MPI_Send(&send_size, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
-                        MPI_Send(&ret, send_size, MPI_INT, i, 0, MPI_COMM_WORLD);
+                        MPI_Send(&ret[0], send_size, MPI_INT, i, 0, MPI_COMM_WORLD);
                     }
                 }
                 return ret;
             }
             else {  //recv elements from root
-                int size;
-                MPI_Recv(&size, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
-                int recv_buf[size];
-                MPI_Recv(recv_buf, size, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
-                ret.resize(size);
-                for(int i=0; i<size; i++){
-                    ret.push_back(vector<int>(1, recv_buf[i]));
-                }
+                int recv_size;
+                MPI_Recv(&recv_size, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+                ret.resize(recv_size);
+                MPI_Recv(&ret[0], recv_size, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+                
                 return ret;
             }
         } else {
