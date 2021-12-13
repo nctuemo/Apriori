@@ -1,17 +1,25 @@
 309554041@ec037-075:~/final/Apriori$ mpirun -np 2 apriori_mpi 5 input.txt output5.txt
 No protocol specified
-[ec037-075:534795] *** Process received signal ***
-[ec037-075:534795] Signal: Segmentation fault (11)
-[ec037-075:534795] Signal code: Address not mapped (1)
-[ec037-075:534795] Failing at address: (nil)
-[ec037-075:534795] [ 0] /lib/x86_64-linux-gnu/libpthread.so.0(+0x153c0)[0x7f9c3317a3c0]
-[ec037-075:534795] [ 1] apriori_mpi(+0x15c3a)[0x5647a016dc3a]
-[ec037-075:534795] [ 2] apriori_mpi(+0x15967)[0x5647a016d967]
-[ec037-075:534795] [ 3] apriori_mpi(+0x149b2)[0x5647a016c9b2]
-[ec037-075:534795] [ 4] apriori_mpi(+0xefc9)[0x5647a0166fc9]
-[ec037-075:534795] [ 5] /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf3)[0x7f9c32f980b3]
-[ec037-075:534795] [ 6] apriori_mpi(+0xec4e)[0x5647a0166c4e]
-[ec037-075:534795] *** End of error message ***
+[ec037-075:535659] *** Process received signal ***
+[ec037-075:535659] Signal: Segmentation fault (11)
+[ec037-075:535659] Signal code: Address not mapped (1)
+[ec037-075:535659] Failing at address: 0x5589c16acf30
+[ec037-075:535659] [ 0] /lib/x86_64-linux-gnu/libpthread.so.0(+0x153c0)[0x7f4b3a8d73c0]
+[ec037-075:535659] [ 1] /lib/x86_64-linux-gnu/libc.so.6(+0x18e708)[0x7f4b3a85c708]
+[ec037-075:535659] [ 2] apriori_mpi(+0x22a2f)[0x5584821faa2f]
+[ec037-075:535659] [ 3] apriori_mpi(+0x222ee)[0x5584821fa2ee]
+[ec037-075:535659] [ 4] apriori_mpi(+0x21756)[0x5584821f9756]
+[ec037-075:535659] [ 5] apriori_mpi(+0x20714)[0x5584821f8714]
+[ec037-075:535659] [ 6] apriori_mpi(+0x1ec44)[0x5584821f6c44]
+[ec037-075:535659] [ 7] apriori_mpi(+0x1c97e)[0x5584821f497e]
+[ec037-075:535659] [ 8] apriori_mpi(+0x19e13)[0x5584821f1e13]
+[ec037-075:535659] [ 9] apriori_mpi(+0x17a8f)[0x5584821efa8f]
+[ec037-075:535659] [10] apriori_mpi(+0x161aa)[0x5584821ee1aa]
+[ec037-075:535659] [11] apriori_mpi(+0x14a30)[0x5584821eca30]
+[ec037-075:535659] [12] apriori_mpi(+0xefc9)[0x5584821e6fc9]
+[ec037-075:535659] [13] /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf3)[0x7f4b3a6f50b3]
+[ec037-075:535659] [14] apriori_mpi(+0xec4e)[0x5584821e6c4e]
+[ec037-075:535659] *** End of error message ***
 --------------------------------------------------------------------------
 Primary job  terminated normally, but 1 process returned
 a non-zero exit code. Per user-direction, the job has been aborted.
