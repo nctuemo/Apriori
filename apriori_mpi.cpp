@@ -108,7 +108,7 @@ public:
                 }
                 if(world_size>1){  //send elements to workers
                     int send_size = ret.size();
-                    for (int i=1; i<=world_size; i++){
+                    for (int i=1; i<world_size; i++){
                         MPI_Send(&send_size, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
                         MPI_Send(&ret, send_size, MPI_INT, i, 0, MPI_COMM_WORLD);
                     }
@@ -122,7 +122,7 @@ public:
                 MPI_Recv(recv_buf, size, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
                 ret.resize(size);
                 for(int i=0; i<size; i++){
-                    ret.push_back(vector<int>(1, i));
+                    ret.push_back(vector<int>(1, recv_buf[i]));
                 }
                 return ret;
             }

@@ -1,12 +1,21 @@
-309554041@ec037-075:~/final/Apriori$ mpirun -np 4 --hostfile hosts apriori_mpi 5 input.txt output5.txt
+309554041@ec037-075:~/final/Apriori$ mpirun -np 2 apriori_mpi 5 input.txt output5.txt
 No protocol specified
-No protocol specified
-No protocol specified
-No protocol specified
-No protocol specified
-[ec037-076:2304329] *** An error occurred in MPI_Send
-[ec037-076:2304329] *** reported by process [4119986177,0]
-[ec037-076:2304329] *** on communicator MPI_COMM_WORLD
-[ec037-076:2304329] *** MPI_ERR_RANK: invalid rank
-[ec037-076:2304329] *** MPI_ERRORS_ARE_FATAL (processes in this communicator will now abort,
-[ec037-076:2304329] ***    and potentially your MPI job)
+[ec037-075:534795] *** Process received signal ***
+[ec037-075:534795] Signal: Segmentation fault (11)
+[ec037-075:534795] Signal code: Address not mapped (1)
+[ec037-075:534795] Failing at address: (nil)
+[ec037-075:534795] [ 0] /lib/x86_64-linux-gnu/libpthread.so.0(+0x153c0)[0x7f9c3317a3c0]
+[ec037-075:534795] [ 1] apriori_mpi(+0x15c3a)[0x5647a016dc3a]
+[ec037-075:534795] [ 2] apriori_mpi(+0x15967)[0x5647a016d967]
+[ec037-075:534795] [ 3] apriori_mpi(+0x149b2)[0x5647a016c9b2]
+[ec037-075:534795] [ 4] apriori_mpi(+0xefc9)[0x5647a0166fc9]
+[ec037-075:534795] [ 5] /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf3)[0x7f9c32f980b3]
+[ec037-075:534795] [ 6] apriori_mpi(+0xec4e)[0x5647a0166c4e]
+[ec037-075:534795] *** End of error message ***
+--------------------------------------------------------------------------
+Primary job  terminated normally, but 1 process returned
+a non-zero exit code. Per user-direction, the job has been aborted.
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+mpirun noticed that process rank 1 with PID 0 on node ec037-075 exited on signal 11 (Segmentation fault).
+--------------------------------------------------------------------------
