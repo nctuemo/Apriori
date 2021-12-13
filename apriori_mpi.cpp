@@ -21,16 +21,20 @@ long double round(long double value, int pos){
 
 class Apriori {
 private:
-    int nowStep;
+    int nowStep, world_rank, world_size;
     long double minSupport;
+    MPI_Status status;
     vector<vector<int> > transactions;
     vector<vector<int> > C, L;
     vector<vector<vector<int> > > frequentSet;
     vector<tuple<vector<int>, vector<int>, long double, long double> > associationRules;
 public:
-    Apriori (vector<vector<int> > _transactions, long double _minSupport) {
+    Apriori (vector<vector<int> > _transactions, long double _minSupport, int _world_rank, int _world_size) {
         nowStep=0;
         minSupport = _minSupport;
+        world_rank = _world_rank;
+        world_size = _world_size;
+
         for(auto&row:_transactions){
             sort(row.begin(), row.end());
             transactions.push_back(row);
@@ -43,20 +47,25 @@ public:
     }
     
     void process() {
+        
         while(true) {
             C = generateNextC();
             if(C.size()==0) break;
             nowStep++;
-            
+            MPI_Barrier(MPI_COMM_WORLD); //sync C from all processes, then do L
             L = generateL();
-            frequentSet.push_back(L);
-        }
-        
-        for(auto&stepItemSet:frequentSet) {
-            for(auto&items:stepItemSet) {
-                generateAssociationRule(items, {}, {}, 0);
+            if(world_rank == 0){
+                frequentSet.push_back(L);
             }
         }
+        if(world_rank == 0){
+            for(auto&stepItemSet:frequentSet) {
+                for(auto&items:stepItemSet) {
+                    generateAssociationRule(items, {}, {}, 0);
+                }
+            }
+        }
+        
     }
     
     void generateAssociationRule(vector<int> items, vector<int> X, vector<int> Y, int index) {
@@ -91,10 +100,32 @@ public:
     vector<vector<int> > generateNextC() {
         if(nowStep==0) {
             vector<vector<int> > ret;
-            vector<int> element = getElement(transactions);
-            for(auto&i:element) ret.push_back(vector<int>(1, i));
-            
-            return ret;
+
+            if(world_rank == 0){  //root get elements of transactions 
+                vector<int> element = getElement(transactions);
+                for(auto&i:element) {
+                    ret.push_back(vector<int>(1, i));
+                }
+                if(world_size>1){  //send elements to workers
+                    int send_size = ret.size();
+                    for (int i=1; i<=world_size; i++){
+                        MPI_Send(&send_size, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
+                        MPI_Send(&ret, send_size, MPI_INT, i, 0, MPI_COMM_WORLD);
+                    }
+                }
+                return ret;
+            }
+            else {  //recv elements from root
+                int size;
+                MPI_Recv(&size, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+                int recv_buf[size];
+                MPI_Recv(recv_buf, size, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+                ret.resize(size);
+                for(int i=0; i<size; i++){
+                    ret.push_back(vector<int>(1, i));
+                }
+                return ret;
+            }
         } else {
             return pruning(joining());
         }
@@ -164,11 +195,22 @@ public:
     
     vector<vector<int> > generateL() {
         vector<vector<int> > ret;
-        for(auto&row:C){
+        int world_rank, world_size;
+        MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+        MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+        MPI_Status status;
+        for(auto&row:C){ //TODO: distribute row works by process rank
             long double support = getSupport(row);
             if(round(support, 2) < minSupport) continue;
             ret.push_back(row);
         }
+        if (world_rank != 0){
+            //send local ret to root, recv global L
+        }
+        else {
+            //recv ret, combine to root local and send global L
+        }
+        
         return ret;
     }
 };
@@ -295,7 +337,7 @@ int main (int argc, char ** argv) {
     string minSupport(argv[1]);
     string inputFileName(argv[2]);
     string outputFileName(argv[3]);
-    
+    int world_rank, world_size;  
     /*
     vector<vector<int> > transactions = {
         {1, 2, 5},
@@ -312,16 +354,23 @@ int main (int argc, char ** argv) {
     
     InputReader inputReader(inputFileName);
     vector<vector<int> > transactions = inputReader.getTransactions();
-    Apriori apriori(transactions, stold(minSupport));
 
+    MPI_Init(NULL, NULL);
+    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+    MPI_Status status;
+
+    Apriori apriori(transactions, stold(minSupport), world_rank, world_size);
     chrono::steady_clock::time_point begin = chrono::steady_clock::now();
     apriori.process();
     chrono::steady_clock::time_point end = chrono::steady_clock::now();
 
+    if (world_rank == 0)
+    {
     cout << chrono::duration_cast<chrono::microseconds>(end - begin).count() << endl;
-    
     OutputPrinter outputPrinter(outputFileName, apriori.getAssociationRules());
-    
+    }
+    MPI_Finalize();
     /*
     for test
     Checker checker("output5.txt", "outputRsupport5.txt");
